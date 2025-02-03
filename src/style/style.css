@@ -1,0 +1,12 @@
+.header{
+    min-height:100px;
+    width:100%;
+
+}
+.logo{
+    height:80px;
+    width: auto;
+    float: left;
+    margin-top: 20px;
+
+}

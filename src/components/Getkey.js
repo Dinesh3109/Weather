@@ -1,89 +1,94 @@
 import React from 'react';
 import '../App.css';
 import '../style/grid.css';
+import xmlJs from 'xml-js';
 
 
-export default class Getkey extends React.Component{
+export default class Getkey extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state={
+    this.state = {
       city: '',
-      cityKey:'',
-      isKey:false
+      cityKey: '',
+      isKey: false,
+      xml: ''
     }
-    this.getCityKey=this.getCityKey.bind(this);
-    this.reset=this.reset.bind(this);
+    this.getCityKey = this.getCityKey.bind(this);
+    this.reset = this.reset.bind(this);
 
   }
 
-  handleChange=(event)=>{
+  handleChange = (event) => {
     this.setState({
-        city: event.target.value
+      city: event.target.value
     })
   }
 
-    async getCityKey(city){
-        try{
-            if(city===''){
-                return(
-                    alert('Enter the city name')
-                )
-                    
-            }else{
-                const citytrim=city.trim();
-                const url='http://dataservice.accuweather.com/locations/v1/cities/search?apikey=P9iZNNkz3ScD9GigwNZ2SsHDA9ous8kF&q='+citytrim;
-                await fetch(url).then((response)=> response.json()).then((findresponse)=>{
-                this.setState({ cityKey: findresponse[0].Key,
-                    isKey: true})
-                })
-            
-            }
-        }catch(e){
-        alert('Invalid city');
-        }
-     
+  async getCityKey(city) {
+    try {
+      if (city === '') {
+        return (
+          alert('Enter the city name')
+        )
+
+      } else {
+        // const citytrim = city.trim();
+        const url = 'https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=a59794b6e368e8e07538a196d957acea&mode=xml'
+        await fetch(url, {
+          "Content-Type": "application/xml; charset=utf-8"
+        }).then((response) => response.text()).then(result => {
+          const jsonData = xmlJs.xml2json(result, { compact: true, spaces: 4 });
+          const parsedData = JSON.parse(jsonData);
+          console.log('pare', parsedData.current);
+        });
+
+      }
+    } catch (e) {
+      alert('Invalid city');
     }
-  
-    reset(props){
 
-      this.setState({
-        city:'',
-        isKey:false
+  }
 
-      })
-    }
-    
+  reset(props) {
 
-  render(){
-    return(
-        <div>
+    this.setState({
+      city: '',
+      isKey: false
+
+    })
+  }
+
+
+  render() {
+    return (
+      <div>
         <div className="container">
-        <div className="row">
-            
-              <div className="col span-3-of-3">
-                <div className="textbox">
-                  <label> Enter the city name</label>
-                </div>
+          <div className="row">
+
+            <div className="col span-3-of-3">
+              <div className="textbox">
+                <label> Enter the city name</label>
               </div>
-              <div className="col span-3-of-3">
-                <input type="text" value={this.state.city} 
+            </div>
+            <div className="col span-3-of-3">
+              <input type="text" value={this.state.city}
                 name="city"
                 id="city"
                 placeholder="Enter city name here..."
-                onChange={this.handleChange} 
+                onChange={this.handleChange}
                 required></input>
+            </div>
+            <div className="row">
+
+              <div className="col span-1-of-3">
+                <button className="btn btn-full" onClick={() => { this.getCityKey(this.state.city) }}>GET Weather</button>
               </div>
-              <div className="row">
-                 
-                  <div className="col span-1-of-3">
-                      <button className="btn btn-full" onClick={()=>{this.getCityKey(this.state.city)}}>GET Weather</button>
-                  </div>
-                  <div className="col span-1-of-3">
-                      <button className="btn btn-full" onClick={this.reset}>Reset</button>
-                  </div>
+              <div className="col span-1-of-3">
+                <button className="btn btn-full" onClick={this.reset}>Reset</button>
               </div>
-            {(this.state.isKey) && 
+            </div>
+            {/* {(this.state.isKey) && 
                 <div className="conatiner">
                     <div className="row">
                         <div>
@@ -98,10 +103,10 @@ export default class Getkey extends React.Component{
                     </div>
                     
                 </div>
-            }
+            } */}
+          </div>
         </div>
       </div>
-        </div>
 
     )
   }

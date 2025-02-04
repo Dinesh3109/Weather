@@ -1,7 +1,7 @@
 import React from 'react';
 import '../App.css';
 import '../style/grid.css';
-import xmlJs from 'xml-js';
+
 
 
 export default class Getkey extends React.Component {
@@ -14,7 +14,6 @@ export default class Getkey extends React.Component {
       isKey: false,
       xml: ''
     }
-    this.getCityKey = this.getCityKey.bind(this);
     this.reset = this.reset.bind(this);
 
   }
@@ -25,30 +24,7 @@ export default class Getkey extends React.Component {
     })
   }
 
-  async getCityKey(city) {
-    try {
-      if (city === '') {
-        return (
-          alert('Enter the city name')
-        )
-
-      } else {
-        // const citytrim = city.trim();
-        const url = 'https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=a59794b6e368e8e07538a196d957acea&mode=xml'
-        await fetch(url, {
-          "Content-Type": "application/xml; charset=utf-8"
-        }).then((response) => response.text()).then(result => {
-          const jsonData = xmlJs.xml2json(result, { compact: true, spaces: 4 });
-          const parsedData = JSON.parse(jsonData);
-          console.log('pare', parsedData.current);
-        });
-
-      }
-    } catch (e) {
-      alert('Invalid city');
-    }
-
-  }
+ 
 
   reset(props) {
 
@@ -82,7 +58,7 @@ export default class Getkey extends React.Component {
             <div className="row">
 
               <div className="col span-1-of-3">
-                <button className="btn btn-full" onClick={() => { this.getCityKey(this.state.city) }}>GET Weather</button>
+                <button className="btn btn-full" onClick={() => { this.props.getTemp(this.state.city) }}>GET Weather</button>
               </div>
               <div className="col span-1-of-3">
                 <button className="btn btn-full" onClick={this.reset}>Reset</button>

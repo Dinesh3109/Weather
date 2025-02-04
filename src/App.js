@@ -3,6 +3,7 @@ import Getkey from './components/Getkey';
 import {Reset} from './components/Reset';
 import './App.css';
 import './style/grid.css';
+import xmlJs from 'xml-js';
 
 
 
@@ -54,12 +55,47 @@ export default class App extends React.Component{
      })
     });
   }
+
+   getCityTemperature = async(city) => {
+    try {
+      if (city === '') {
+        return (
+          alert('Enter the city name')
+        )
+
+      } else {
+        // const citytrim = city.trim();
+        const url = 'https://api.openweathermap.org/data/2.5/weather?lat=44.34&lon=10.99&appid=a59794b6e368e8e07538a196d957acea&mode=xml'
+        await fetch(url, {
+          "Content-Type": "application/xml; charset=utf-8"
+        }).then((response) => response.text()).then(result => {
+          const jsonData = xmlJs.xml2json(result, { compact: true, spaces: 4 });
+          const parsedData = JSON.parse(jsonData);
+          console.log('pare', parsedData.current);
+          this.setState({
+            temperature: {
+              WeatherText : parsedData.current?.clouds?._attributes?.name || '',
+              celsius:parsedData.current?.temperature?._attributes?.value || '',
+              unit: parsedData.current?.temperature?._attributes?.unit || ''
+            },
+            isTemp:true,
+            isForcast:false
+      
+           })
+        });
+
+      }
+    } catch (e) {
+      alert('Invalid city');
+    }
+
+  }
  
 
   render(){
     return(
         <div>
-          <Getkey getTemperature={this.getTemperature} getForcast={this.getForcast} isTemp={this.state.isTemp}/>
+          <Getkey getTemperature={this.getTemperature} getForcast={this.getForcast} isTemp={this.state.isTemp} getTemp={this.getCityTemperature}/>
             {(this.state.isTemp) && 
               <div className="container">
                   <p className="weatherinfo">The Weather is <strong> {this.state.temperature.WeatherText} </strong> and The Temperature is 
@@ -70,7 +106,7 @@ export default class App extends React.Component{
                   </div>
               </div>
             }
-            {(this.state.isForcast) && 
+            {/* {(this.state.isForcast) && 
               <div className="container-forcasting">
                   <div>
                     {this.state.forcasting.map((daily)=>(
@@ -94,7 +130,7 @@ export default class App extends React.Component{
                   </div>
                  <Reset reset={this.reset}/>
               </div>
-            }
+            } */}
         </div>
 
     )
